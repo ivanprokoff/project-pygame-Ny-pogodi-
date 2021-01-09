@@ -3,6 +3,7 @@ import sys
 import os
 from loading import load_image
 from chickens import Chickens
+from wolf import Wolf
 
 
 FPS = 50
@@ -53,18 +54,25 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode(size)
     running = True
     clock = pygame.time.Clock()
-    background = load_image('background.png')
-    wolf = load_image('wolf_main_left.png')
-    chickens = load_image('chickens.png')
+    background = pygame.transform.scale(load_image('background.png'), (width, height))
+    wolf_left = load_image('wolf_main_left.png')
+    wolf_right = load_image('wolf_main_right.png')
+    wolf_sprite = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     Chickens(all_sprites)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif start:
+            if start:
                 start_screen()
                 start = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RIGHT:
+                    screen.blit(wolf_right, (200, 100))
+                if event.key == pygame.K_LEFT:
+                    screen.blit(wolf_left, (200, 100))
+        wolf_sprite.draw(screen)
         all_sprites.draw(screen)
         pygame.display.flip()
     pygame.quit()
