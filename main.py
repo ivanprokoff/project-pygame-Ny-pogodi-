@@ -46,10 +46,71 @@ def start_screen():
         clock.tick(FPS)
 
 
+def update_arms(side):
+    global arms_pos
+    if side == 'right' and arms_pos == 'left_down':
+        arms = load_image(arms_positions['right_down'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'right_down'
+
+    elif side == 'up' and body_pos == 'left':
+        arms = load_image(arms_positions['left_up'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'left_up'
+
+    elif side == 'up' and body_pos == 'right':
+        arms = load_image(arms_positions['right_up'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'right_up'
+
+    elif side == 'left' and arms_pos == 'right_down':
+        arms = load_image(arms_positions['left_down'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'left_down'
+
+    elif side == 'left' and arms_pos == 'right_up':
+        arms = load_image(arms_positions['left_up'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'left_up'
+
+    elif side == 'right' and arms_pos == 'left_up':
+        arms = load_image(arms_positions['right_up'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'right_up'
+
+    elif side == 'down' and body_pos == 'right':
+        arms = load_image(arms_positions['right_down'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'right_down'
+
+    elif side == 'down' and body_pos == 'left':
+        arms = load_image(arms_positions['left_down'])
+        screen.blit(background, (0, 0))
+        screen.blit(arms, (0, 0))
+        arms_pos = 'left_down'
+    else:
+        pass
+
+
 if __name__ == '__main__':
     pygame.init()
     start = True
     pygame.display.set_caption('Ну, погоди! | Помоги волку собрать яйца')
+    arms_positions = {
+        'left_down': 'armDownLeft.png',
+        'left_up': 'armUpLeft.png',
+        'right_down': 'armDownRight.png',
+        'right_up': 'armUpRight.png'
+    }
+    body_pos = 'left'
+    arms_pos = 'left_down'
     size = width, height = 600, 450
     screen = pygame.display.set_mode(size)
     running = True
@@ -58,8 +119,10 @@ if __name__ == '__main__':
     wolf_left = load_image('wolf_main_left.png')
     wolf_right = load_image('wolf_main_right.png')
     wolf_sprite = pygame.sprite.Group()
+    Wolf(wolf_sprite)
     all_sprites = pygame.sprite.Group()
     Chickens(all_sprites)
+    arms = load_image('armDownLeft.png')
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -67,11 +130,20 @@ if __name__ == '__main__':
             if start:
                 start_screen()
                 start = False
+                screen.blit(arms, (0, 0))
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    screen.blit(wolf_right, (200, 100))
+                    body_pos = 'right'
+                    update_arms('right')
+                    wolf_sprite.update('right')
                 if event.key == pygame.K_LEFT:
-                    screen.blit(wolf_left, (200, 100))
+                    body_pos = 'left'
+                    update_arms('left')
+                    wolf_sprite.update('left')
+                if event.key == pygame.K_UP:
+                    update_arms('up')
+                if event.key == pygame.K_DOWN:
+                    update_arms('down')
         wolf_sprite.draw(screen)
         all_sprites.draw(screen)
         pygame.display.flip()
