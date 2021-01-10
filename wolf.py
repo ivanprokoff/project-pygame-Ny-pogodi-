@@ -1,4 +1,3 @@
-import random
 import pygame
 from loading import load_image
 

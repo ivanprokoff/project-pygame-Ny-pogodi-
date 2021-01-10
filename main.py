@@ -4,6 +4,7 @@ import os
 from loading import load_image
 from chickens import Chickens
 from wolf import Wolf
+from egg import Egg
 
 
 FPS = 50
@@ -99,6 +100,11 @@ def update_arms(side):
         pass
 
 
+def spawn_egg():
+    return Egg()
+
+
+
 if __name__ == '__main__':
     pygame.init()
     start = True
@@ -121,6 +127,7 @@ if __name__ == '__main__':
     wolf_sprite = pygame.sprite.Group()
     Wolf(wolf_sprite)
     all_sprites = pygame.sprite.Group()
+    eggs = pygame.sprite.Group()
     Chickens(all_sprites)
     arms = load_image('armDownLeft.png')
     while running:
@@ -144,7 +151,12 @@ if __name__ == '__main__':
                     update_arms('up')
                 if event.key == pygame.K_DOWN:
                     update_arms('down')
+            egg = spawn_egg()
+            egg.choose_position()
+            egg.draw(screen)
+            egg.update(screen)
         wolf_sprite.draw(screen)
         all_sprites.draw(screen)
         pygame.display.flip()
+
     pygame.quit()
