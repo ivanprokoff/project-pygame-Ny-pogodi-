@@ -34,4 +34,4 @@ class Egg(pygame.sprite.Sprite):
         self.index += 1
 
     def draw(self, screen):
-        screen.blit(self.image, (100, 100))
+        screen.blit(self.image, (self.rect.x, self.rect.y))
