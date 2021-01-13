@@ -5,6 +5,7 @@ from loading import load_image
 from chickens import Chickens
 from wolf import Wolf
 from egg import Egg
+from arms import Arms
 
 
 FPS = 50
@@ -44,6 +45,7 @@ def start_screen():
                 screen.fill(pygame.Color('white'))
                 background = pygame.transform.scale(load_image('background.png'), (WIDTH, HEIGHT))
                 screen.blit(background, (0, 0))
+                screen.blit(arms.image, (0, 0))
                 return
         pygame.display.flip()
         clock.tick(FPS)
@@ -115,7 +117,8 @@ if __name__ == '__main__':
     all_sprites = pygame.sprite.Group()
     eggs = []
     Chickens(all_sprites)
-    arms = load_image('armDownLeft.png')
+    arms = Arms()
+    screen.blit(arms.image, (0, 0))
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -123,24 +126,25 @@ if __name__ == '__main__':
             if start:
                 start_screen()
                 start = False
-                screen.blit(arms, (0, 0))
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
                     body_pos = 'right'
-                    update_arms('right')
+                    arms_pos = arms.update_arms('right', arms_pos, body_pos, screen)
                     wolf_sprite.update('right')
+                    screen.blit(arms.image, (0, 0))
                 if event.key == pygame.K_LEFT:
                     body_pos = 'left'
-                    update_arms('left')
+                    arms_pos = arms.update_arms('left', arms_pos, body_pos, screen)
                     wolf_sprite.update('left')
+                    screen.blit(arms.image, (0, 0))
                 if event.key == pygame.K_UP:
-                    update_arms('up')
+                    arms_pos = arms.update_arms('up', arms_pos, body_pos, screen)
                 if event.key == pygame.K_DOWN:
-                    update_arms('down')
+                    arms_pos = arms.update_arms('down', arms_pos, body_pos, screen)
         screen.blit(background, (0, 0))
         wolf_sprite.draw(screen)
-        screen.blit(arms, (0, 0))
         all_sprites.draw(screen)
+        screen.blit(arms.image, (0, 0))
         if running:
             time += clock.get_time()
         if time > TIME_PER_STEP:
