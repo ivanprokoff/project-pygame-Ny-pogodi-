@@ -101,8 +101,7 @@ def update_arms(side):
 
 
 def spawn_egg():
-    return Egg()
-
+    eggs.append(Egg())
 
 
 if __name__ == '__main__':
@@ -115,11 +114,13 @@ if __name__ == '__main__':
         'right_down': 'armDownRight.png',
         'right_up': 'armUpRight.png'
     }
+    TIME_PER_STEP = 1500
     body_pos = 'left'
     arms_pos = 'left_down'
     size = width, height = 600, 450
     screen = pygame.display.set_mode(size)
     running = True
+    time = 0
     clock = pygame.time.Clock()
     background = pygame.transform.scale(load_image('background.png'), (width, height))
     wolf_left = load_image('wolf_main_left.png')
@@ -127,7 +128,7 @@ if __name__ == '__main__':
     wolf_sprite = pygame.sprite.Group()
     Wolf(wolf_sprite)
     all_sprites = pygame.sprite.Group()
-    eggs = pygame.sprite.Group()
+    eggs = []
     Chickens(all_sprites)
     arms = load_image('armDownLeft.png')
     while running:
@@ -151,7 +152,10 @@ if __name__ == '__main__':
                     update_arms('up')
                 if event.key == pygame.K_DOWN:
                     update_arms('down')
-            egg = spawn_egg()
+        spawn_egg()
+        for egg in eggs:
+            if egg.index == 3:
+                eggs.remove(egg)
             egg.choose_position()
             egg.draw(screen)
             egg.update(screen)
