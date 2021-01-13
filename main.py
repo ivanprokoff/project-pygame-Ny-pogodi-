@@ -51,42 +51,6 @@ def start_screen():
         clock.tick(FPS)
 
 
-def update_arms(side):
-    global arms_pos
-    global arms
-    if side == 'right' and arms_pos == 'left_down':
-        arms = load_image(arms_positions['right_down'])
-        arms_pos = 'right_down'
-
-    elif side == 'up' and body_pos == 'left':
-        arms = load_image(arms_positions['left_up'])
-        arms_pos = 'left_up'
-
-    elif side == 'up' and body_pos == 'right':
-        arms = load_image(arms_positions['right_up'])
-        arms_pos = 'right_up'
-
-    elif side == 'left' and arms_pos == 'right_down':
-        arms = load_image(arms_positions['left_down'])
-        arms_pos = 'left_down'
-
-    elif side == 'left' and arms_pos == 'right_up':
-        arms = load_image(arms_positions['left_up'])
-        arms_pos = 'left_up'
-
-    elif side == 'right' and arms_pos == 'left_up':
-        arms = load_image(arms_positions['right_up'])
-        arms_pos = 'right_up'
-
-    elif side == 'down' and body_pos == 'right':
-        arms = load_image(arms_positions['right_down'])
-        arms_pos = 'right_down'
-
-    elif side == 'down' and body_pos == 'left':
-        arms = load_image(arms_positions['left_down'])
-        arms_pos = 'left_down'
-
-
 def spawn_egg():
     eggs.append(Egg())
 
