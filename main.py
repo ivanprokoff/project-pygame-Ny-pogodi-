@@ -8,6 +8,8 @@ from egg import Egg
 
 
 FPS = 50
+WIDTH = 600
+HEIGHT = 450
 
 
 def terminate():
@@ -19,7 +21,7 @@ def start_screen():
     intro_text = ['Нажмите любую клавишу',
                   'для продолжения']
 
-    fon = pygame.transform.scale(load_image('fon.png'), (width, height))
+    fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
@@ -40,7 +42,7 @@ def start_screen():
                     event.type == pygame.MOUSEBUTTONDOWN:
                 print('поихали')
                 screen.fill(pygame.Color('white'))
-                background = pygame.transform.scale(load_image('background.png'), (width, height))
+                background = pygame.transform.scale(load_image('background.png'), (WIDTH, HEIGHT))
                 screen.blit(background, (0, 0))
                 return
         pygame.display.flip()
@@ -49,55 +51,38 @@ def start_screen():
 
 def update_arms(side):
     global arms_pos
+    global arms
     if side == 'right' and arms_pos == 'left_down':
         arms = load_image(arms_positions['right_down'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'right_down'
 
     elif side == 'up' and body_pos == 'left':
         arms = load_image(arms_positions['left_up'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'left_up'
 
     elif side == 'up' and body_pos == 'right':
         arms = load_image(arms_positions['right_up'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'right_up'
 
     elif side == 'left' and arms_pos == 'right_down':
         arms = load_image(arms_positions['left_down'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'left_down'
 
     elif side == 'left' and arms_pos == 'right_up':
         arms = load_image(arms_positions['left_up'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'left_up'
 
     elif side == 'right' and arms_pos == 'left_up':
         arms = load_image(arms_positions['right_up'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'right_up'
 
     elif side == 'down' and body_pos == 'right':
         arms = load_image(arms_positions['right_down'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'right_down'
 
     elif side == 'down' and body_pos == 'left':
         arms = load_image(arms_positions['left_down'])
-        screen.blit(background, (0, 0))
-        screen.blit(arms, (0, 0))
         arms_pos = 'left_down'
-    else:
-        pass
 
 
 def spawn_egg():
@@ -117,12 +102,12 @@ if __name__ == '__main__':
     TIME_PER_STEP = 1500
     body_pos = 'left'
     arms_pos = 'left_down'
-    size = width, height = 600, 450
+    size = WIDTH, HEIGHT
     screen = pygame.display.set_mode(size)
     running = True
     time = 0
     clock = pygame.time.Clock()
-    background = pygame.transform.scale(load_image('background.png'), (width, height))
+    background = pygame.transform.scale(load_image('background.png'), (WIDTH, HEIGHT))
     wolf_left = load_image('wolf_main_left.png')
     wolf_right = load_image('wolf_main_right.png')
     wolf_sprite = pygame.sprite.Group()
@@ -152,15 +137,26 @@ if __name__ == '__main__':
                     update_arms('up')
                 if event.key == pygame.K_DOWN:
                     update_arms('down')
-        spawn_egg()
-        for egg in eggs:
-            if egg.index == 3:
-                eggs.remove(egg)
-            egg.choose_position()
-            egg.draw(screen)
-            egg.update(screen)
+        screen.blit(background, (0, 0))
         wolf_sprite.draw(screen)
+        screen.blit(arms, (0, 0))
         all_sprites.draw(screen)
+        if running:
+            time += clock.get_time()
+        if time > TIME_PER_STEP:
+            time = 0
+            shift = False
+            for egg in eggs:
+                egg.update(screen)
+                egg.update_index()
+                if egg.index > 2:
+                    eggs.remove(egg)
+                    print('яйцо удалено')
+            spawn_egg()
+            print('яйцо создано')
+        for egg in eggs:
+            egg.draw(screen)
         pygame.display.flip()
+        clock.tick(FPS)
 
     pygame.quit()
