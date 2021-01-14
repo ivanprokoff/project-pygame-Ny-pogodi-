@@ -3,8 +3,6 @@ import sys
 
 from loading import load_image
 
-import pygame.freetype
-
 from miss import Miss
 from wolf import Wolf
 from egg import Egg
@@ -15,7 +13,7 @@ from chickens import Chickens
 FPS = 50
 WIDTH = 600
 HEIGHT = 450
-TIME_PER_STEP = 1700
+ONE_STEP = 1700
 
 arms_positions = {
         'left_down': 'armDownLeft.png',
@@ -68,6 +66,7 @@ def start_screen():
                 background = pygame.transform.scale(load_image('background.png'), (WIDTH, HEIGHT))
                 screen.blit(background, (0, 0))
                 screen.blit(arms.image, (0, 0))
+                sound.stop()
                 return
         pygame.display.flip()
         clock.tick(FPS)
@@ -133,7 +132,7 @@ if __name__ == '__main__':
 
     pygame.display.set_caption('Ну, погоди! | Помоги волку собрать яйца')
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    font = pygame.freetype.Font(None, 20)
+    font = pygame.font.Font(None, 48)
     clock = pygame.time.Clock()
 
     background = pygame.transform.scale(load_image('background.png'), (WIDTH, HEIGHT))
@@ -183,7 +182,7 @@ if __name__ == '__main__':
         if running:
             # Обработка яиц
             time += clock.get_time()
-            if time > TIME_PER_STEP:
+            if time > ONE_STEP:
                 time = 0
                 shift = False
                 for egg in eggs:
@@ -206,8 +205,12 @@ if __name__ == '__main__':
             for egg in eggs:
                 # Отрисовка яиц
                 egg.draw(screen)
-            scoreText, _ = font.render("{}".format(counter), pygame.Color("#ff0000"))
-            screen.blit(scoreText, (100, 20))
+            if counter == 10:
+                # Если набираем 10 яиц, ускоряем игру
+                ONE_STEP = ONE_STEP - 10
+            text1 = font.render(str(counter), True,
+                              (51, 51, 255))
+            screen.blit(text1, (120, 20))
             pygame.display.flip()
             clock.tick(FPS)
 
