@@ -3,7 +3,7 @@ import pygame
 
 
 class Chickens(pygame.sprite.Sprite):
-
+    # Класс для куриц на фоне
     def __init__(self, *group):
         # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
         # Это очень важно!!!
