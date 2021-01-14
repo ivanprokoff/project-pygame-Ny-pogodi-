@@ -205,9 +205,9 @@ if __name__ == '__main__':
             for egg in eggs:
                 # Отрисовка яиц
                 egg.draw(screen)
-            if counter == 10:
-                # Если набираем 10 яиц, ускоряем игру
-                ONE_STEP = ONE_STEP - 10
+            if counter == 20:
+                # Если набираем 20 яиц, ускоряем игру
+                ONE_STEP = ONE_STEP - 2
             text1 = font.render(str(counter), True,
                               (51, 51, 255))
             screen.blit(text1, (120, 20))

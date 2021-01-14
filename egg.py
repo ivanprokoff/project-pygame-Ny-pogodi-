@@ -52,7 +52,5 @@ class Egg(pygame.sprite.Sprite):
 
     def catch(self, arms_pos):
         # Проверка на то, было ли поймано яйцо
-        print(self.position)
-        print(arms_pos)
         if self.position == arms_pos:
             return True
