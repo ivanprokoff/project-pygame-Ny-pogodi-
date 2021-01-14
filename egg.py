@@ -1,39 +1,58 @@
 import pygame
-from loading import load_image
 import random
+from PIL import Image
 
 
 class Egg(pygame.sprite.Sprite):
+    # Класс для яиц
     def __init__(self, *group):
-        # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
-        # Это очень важно!!!
         super().__init__(*group)
-        self.image = load_image("newEgg.png")
+        self.image = pygame.image.load("newEgg1.png")
+        self.name = 'newEgg.png'
         self.rect = self.image.get_rect()
         self.rect.x = False
         self.rect.y = False
         self.all_positions = {
-            0: [(60, 120), (90, 140), (120, 160)],
-            1: [(520, 120), (495, 135), (460, 160)],
-            2: [(60, 260), (90, 275), (120, 290)],
-            3: [(520, 260), (495, 270), (460, 290)]
+            'left_up': [(60, 120), (90, 140), (120, 160), (120, 160)],
+            'left_down': [(60, 260), (90, 275), (120, 290), (120, 290)],
+            'right_up': [(520, 120), (495, 135), (460, 160), (460, 160)],
+            'right_down': [(520, 260), (495, 270), (460, 290), (460, 290)]
         }
-        self.coords = self.all_positions[random.randint(0, 3)]
+        self.position = random.choice(['left_up', 'right_up', 'left_down', 'right_down'])
+        self.coords = self.all_positions[self.position]
         self.index = 0
-        self.mask = pygame.mask.from_surface(self.image)
+        self.is_caught = False
 
     def choose_position(self):
-        self.coords = self.all_positions[random.randint(0, 4)]
-        print(self.coords)
+        # Обозначение позиции яйца
+        self.coords = self.all_positions[self.position]
 
-    def update(self, screen):
+    def update(self):
+        # Обновление координат яйца
         crd = self.coords[self.index]
         self.rect.x = crd[0]
         self.rect.y = crd[1]
 
     def update_index(self):
+        # Обновление индекса яйца
         self.index += 1
 
     def draw(self, screen):
+        # Отрисовка яйца на экране
         if self.rect.x and self.rect.y:
             screen.blit(self.image, (self.rect.x, self.rect.y))
+
+    def rotate(self):
+        # Переворот яйца
+        if self.index != 0:
+            im = Image.open(self.name)
+            im = im.rotate(90, expand=True)
+            im.save('newEgg.png')
+            self.image = pygame.image.load("newEgg.png")
+
+    def catch(self, arms_pos):
+        # Проверка на то, было ли поймано яйцо
+        print(self.position)
+        print(arms_pos)
+        if self.position == arms_pos:
+            return True

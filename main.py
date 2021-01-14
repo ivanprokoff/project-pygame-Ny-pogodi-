@@ -1,16 +1,36 @@
 import pygame
 import sys
-import os
+
 from loading import load_image
-from chickens import Chickens
+
+import pygame.freetype
+
+from miss import Miss
 from wolf import Wolf
 from egg import Egg
 from arms import Arms
+from chickens import Chickens
 
 
 FPS = 50
 WIDTH = 600
 HEIGHT = 450
+TIME_PER_STEP = 1700
+
+arms_positions = {
+        'left_down': 'armDownLeft.png',
+        'left_up': 'armUpLeft.png',
+        'right_down': 'armDownRight.png',
+        'right_up': 'armUpRight.png'
+    }
+
+body_pos = 'left'
+arms_pos = 'left_down'
+
+time = 0
+counter = 0
+misses = 0
+interval = 0
 
 
 def terminate():
@@ -19,6 +39,9 @@ def terminate():
 
 
 def start_screen():
+    # стартовый экран игры
+    sound = pygame.mixer.Sound('music.wav')
+    sound.play()
     intro_text = ['Нажмите любую клавишу',
                   'для продолжения']
 
@@ -41,7 +64,6 @@ def start_screen():
                 terminate()
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
-                print('поихали')
                 screen.fill(pygame.Color('white'))
                 background = pygame.transform.scale(load_image('background.png'), (WIDTH, HEIGHT))
                 screen.blit(background, (0, 0))
@@ -52,79 +74,141 @@ def start_screen():
 
 
 def spawn_egg():
+    # Функция генерации яйца
     eggs.append(Egg())
+
+
+def render():
+    # Функция отрисовки сцены
+    screen.blit(background, (0, 0))
+    wolf_sprite.draw(screen)
+    all_sprites.draw(screen)
+    misses_sprites.draw(screen)
+    screen.blit(arms.image, (0, 0))
+
+
+def game_over():
+    # завершение игры
+    global running
+    background = pygame.transform.scale(load_image('game_over.png'), (WIDTH, HEIGHT))
+    running = False
+    run = True
+    x = -500
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+        screen.blit(background, (x, 0))
+        x += 10
+        pygame.display.flip()
+        clock.tick(FPS)
+        if x == 0:
+            run = False
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+        screen.blit(background, (10, 0))
+
+
+def miss():
+    # функция вызывается при пропуске яйца
+    global misses
+    Miss(misses_sprites)
+    misses_sprites.update()
+    misses += 1
+    print('промах')
+    print(misses)
+    if misses == 3:
+        Miss(misses_sprites)
+        misses_sprites.update()
+        clock.tick(FPS)
+        game_over()
 
 
 if __name__ == '__main__':
     pygame.init()
     start = True
-    pygame.display.set_caption('Ну, погоди! | Помоги волку собрать яйца')
-    arms_positions = {
-        'left_down': 'armDownLeft.png',
-        'left_up': 'armUpLeft.png',
-        'right_down': 'armDownRight.png',
-        'right_up': 'armUpRight.png'
-    }
-    TIME_PER_STEP = 1500
-    body_pos = 'left'
-    arms_pos = 'left_down'
-    size = WIDTH, HEIGHT
-    screen = pygame.display.set_mode(size)
     running = True
-    time = 0
+
+    pygame.display.set_caption('Ну, погоди! | Помоги волку собрать яйца')
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    font = pygame.freetype.Font(None, 20)
     clock = pygame.time.Clock()
+
     background = pygame.transform.scale(load_image('background.png'), (WIDTH, HEIGHT))
     wolf_left = load_image('wolf_main_left.png')
     wolf_right = load_image('wolf_main_right.png')
+
     wolf_sprite = pygame.sprite.Group()
-    Wolf(wolf_sprite)
     all_sprites = pygame.sprite.Group()
-    eggs = []
+    misses_sprites = pygame.sprite.Group()
+
+    Wolf(wolf_sprite)
     Chickens(all_sprites)
     arms = Arms()
+
+    eggs = []
+
     screen.blit(arms.image, (0, 0))
+
     while running:
+        # Главный игровой цикл
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if start:
+                # Вызов стартового экрана
                 start_screen()
                 start = False
             if event.type == pygame.KEYDOWN:
+                # Обработка событий - нажатия стрелок
                 if event.key == pygame.K_RIGHT:
                     body_pos = 'right'
-                    arms_pos = arms.update_arms('right', arms_pos, body_pos, screen)
+                    arms_pos = arms.update_arms('right', arms_pos, body_pos)
                     wolf_sprite.update('right')
                     screen.blit(arms.image, (0, 0))
                 if event.key == pygame.K_LEFT:
                     body_pos = 'left'
-                    arms_pos = arms.update_arms('left', arms_pos, body_pos, screen)
+                    arms_pos = arms.update_arms('left', arms_pos, body_pos)
                     wolf_sprite.update('left')
                     screen.blit(arms.image, (0, 0))
                 if event.key == pygame.K_UP:
-                    arms_pos = arms.update_arms('up', arms_pos, body_pos, screen)
+                    arms_pos = arms.update_arms('up', arms_pos, body_pos)
                 if event.key == pygame.K_DOWN:
-                    arms_pos = arms.update_arms('down', arms_pos, body_pos, screen)
-        screen.blit(background, (0, 0))
-        wolf_sprite.draw(screen)
-        all_sprites.draw(screen)
-        screen.blit(arms.image, (0, 0))
+                    arms_pos = arms.update_arms('down', arms_pos, body_pos)
+
+        render()
+
         if running:
+            # Обработка яиц
             time += clock.get_time()
-        if time > TIME_PER_STEP:
-            time = 0
-            shift = False
+            if time > TIME_PER_STEP:
+                time = 0
+                shift = False
+                for egg in eggs:
+                    egg.update()
+                    egg.update_index()
+                    if egg.index != 0:
+                        egg.rotate()
+                    if egg.index == 4:
+                        if egg.catch(arms_pos):
+                            counter += 1
+                        else:
+                            miss()
+                        eggs.remove(egg)
+                if interval % 2 == 0:
+                    shift = True
+                if shift:
+                    spawn_egg()
+                    shift = False
+                interval += 1
             for egg in eggs:
-                egg.update(screen)
-                egg.update_index()
-                if egg.index > 2:
-                    eggs.remove(egg)
-                    print('яйцо удалено')
-            spawn_egg()
-            print('яйцо создано')
-        for egg in eggs:
-            egg.draw(screen)
-        pygame.display.flip()
-        clock.tick(FPS)
+                # Отрисовка яиц
+                egg.draw(screen)
+            scoreText, _ = font.render("{}".format(counter), pygame.Color("#ff0000"))
+            screen.blit(scoreText, (100, 20))
+            pygame.display.flip()
+            clock.tick(FPS)
 
     pygame.quit()

@@ -2,7 +2,8 @@ import pygame
 from loading import load_image
 
 
-class Arms():
+class Arms:
+    # Класс для Рук волка
     def __init__(self):
         # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
         # Это очень важно!!!
@@ -16,7 +17,8 @@ class Arms():
         }
         self.mask = pygame.mask.from_surface(self.image)
 
-    def update_arms(self, side, arms_pos, body_pos, screen):
+    def update_arms(self, side, arms_pos, body_pos):
+        # Обновление статуса рук и изображения
         if side == 'right' and arms_pos == 'left_down':
             self.image = load_image(self.arms_positions['right_down'])
             return 'right_down'
