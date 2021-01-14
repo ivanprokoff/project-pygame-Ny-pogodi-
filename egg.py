@@ -1,13 +1,14 @@
 import pygame
 import random
 from PIL import Image
+import os
 
 
 class Egg(pygame.sprite.Sprite):
     # Класс для яиц
     def __init__(self, *group):
         super().__init__(*group)
-        self.image = pygame.image.load("newEgg1.png")
+        self.image = pygame.image.load("data/newEgg1.png")
         self.name = 'newEgg.png'
         self.rect = self.image.get_rect()
         self.rect.x = False
@@ -45,10 +46,11 @@ class Egg(pygame.sprite.Sprite):
     def rotate(self):
         # Переворот яйца
         if self.index != 0:
-            im = Image.open(self.name)
+            fullname = os.path.join('data', self.name)
+            im = Image.open(fullname)
             im = im.rotate(90, expand=True)
-            im.save('newEgg.png')
-            self.image = pygame.image.load("newEgg.png")
+            im.save('data/newEgg.png')
+            self.image = pygame.image.load("data/newEgg.png")
 
     def catch(self, arms_pos):
         # Проверка на то, было ли поймано яйцо

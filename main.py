@@ -38,7 +38,7 @@ def terminate():
 
 def start_screen():
     # стартовый экран игры
-    sound = pygame.mixer.Sound('music.wav')
+    sound = pygame.mixer.Sound('data/music.wav')
     sound.play()
     intro_text = ['Нажмите любую клавишу',
                   'для продолжения']
