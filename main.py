@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 
 from loading import load_image
 
@@ -39,14 +40,15 @@ def terminate():
 def start_screen():
     # стартовый экран игры
     sound = pygame.mixer.Sound('data/music.wav')
-    sound.play()
-    intro_text = ['Нажмите любую клавишу',
-                  'для продолжения']
+    # sound.play()
+    intro_text = ['Добро пожаловать в игру "Ну, погоди!"', 'Для победы требуется собрать 10 яиц. Удачи!',
+                                                           'В случае победы вас ждет небольшой сюрприз:)', '',
+                  '', '', '', '', '', '', '', 'Нажмите любую клавишу', 'для продолжения',]
 
     fon = pygame.transform.scale(load_image('fon.png'), (WIDTH, HEIGHT))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
-    text_coord = 50
+    text_coord = 0
     for line in intro_text:
         string_rendered = font.render(line, 1, pygame.Color('black'))
         intro_rect = string_rendered.get_rect()
@@ -116,13 +118,22 @@ def miss():
     Miss(misses_sprites)
     misses_sprites.update()
     misses += 1
-    print('промах')
     print(misses)
     if misses == 3:
         Miss(misses_sprites)
         misses_sprites.update()
         clock.tick(FPS)
         game_over()
+
+def win():
+    # вызывается при выигрыше
+    global running
+    running = False
+    fullname = os.path.join('data', 'movie.mp4')
+    os.startfile(fullname)
+    pygame.quit()
+
+
 
 
 if __name__ == '__main__':
@@ -208,6 +219,9 @@ if __name__ == '__main__':
             if counter == 20:
                 # Если набираем 20 яиц, ускоряем игру
                 ONE_STEP = ONE_STEP - 2
+            elif counter == 1:
+
+                win()
             text1 = font.render(str(counter), True,
                               (51, 51, 255))
             screen.blit(text1, (120, 20))
